@@ -31,6 +31,7 @@ namespace Grade_calculator
         string id_student ;
         string name_student ;
         double score_student;
+        bool try_parse_score;
 
 
         // arr สำหรับเก็บการคำนวณ นศ.ที่ได้ A จำนวน n * 4 + ได้ B+ จำนวน n * 3.5 ..... ไปเรื่อยๆ
@@ -123,51 +124,38 @@ namespace Grade_calculator
 
             id_student = text_id_student.Text;
             name_student = text_name.Text;
-            bool try_parse_score = double.TryParse(text_point.Text, out score_student);
+            try_parse_score = double.TryParse(text_point.Text, out score_student);
             if (!try_parse_score)
             {
+                text_point.ForeColor = Color.Red;
+                text_point.SelectionLength = text_point.TextLength;
                 MessageBox.Show("กรุณาป้อนค่าที่เป็นตัวเลขเท่านั้น");
-                text_point.Clear();
-                text_point.BackColor = Color.Red;
+                text_point.Clear(); 
                 return;
             }
             else {
-                    if (ContainsLetters(text_point.Text))
-                    {
-                        MessageBox.Show("กรุณาป้อนค่าที่เป็นตัวเลขเท่านั้น");
-                        text_point.Clear();
-                        return;
-                    }
+                    score_student = double.Parse(text_point.Text);
+                    student = new Student_data(name_student, id_student, (score_student));
+                    List_Student.Add(student);
 
-                    else
-                    {
-                        score_student = double.Parse(text_point.Text);
-                        student = new Student_data(name_student, id_student, (score_student));
-                        List_Student.Add(student);
+                    text_name.Text = "";
+                    text_id_student.Text = "";
+                    text_point.Text = "";
 
-                        text_name.Text = "";
-                        text_id_student.Text = "";
-                        text_point.Text = "";
-                        find_max_min();
+                    find_max_min();
 
 
-                        //average output 
-                        double sum_list = (double)List_Student.Sum(s => s.score);
-                        text_avg_point.Text = (sum_list / (double)List_Student.Count).ToString("0.00");
+                    //average output 
+                    double sum_list = (double)List_Student.Sum(s => s.score);
+                    text_avg_point.Text = (sum_list / (double)List_Student.Count).ToString("0.00");
 
 
-                        // ส่วน เช็คค่าและแสดงผล
-                        Calculate_function();
-                    }
+                    // ส่วน เช็คค่าและแสดงผล
+                    Calculate_function();
             }
 
         }
 
-        // ฟังก์ชันตรวจสอบว่ามีตัวอักษรหรือไม่
-        private bool ContainsLetters(string input)
-        {
-            return input.Any(char.IsLetter);
-        }
 
         // find max min by List_student
         public void find_max_min()
@@ -257,9 +245,10 @@ namespace Grade_calculator
 
         private void text_point_TextChanged(object sender, EventArgs e)
         {
-            if (text_point.Text.Length > 0)
+            if (text_point.TextLength > 0)
             {
-                text_point.BackColor = Color.White;
+                text_point.ForeColor = Color.Black;
+                text_point.SelectionLength = text_point.TextLength;
             }
         }
     }
